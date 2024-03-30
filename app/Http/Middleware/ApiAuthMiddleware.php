@@ -17,14 +17,12 @@ class ApiAuthMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!Auth::guard('api')->check()) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        $user = Auth::user();
+
+        if ($user) {
+            $request->merge(['user_id' => $user->id]);
         }
 
-        $user = Auth::user();
-      $request->merge(['user_id' => $user->id]);
-
-      
         return $next($request);
     }
 }

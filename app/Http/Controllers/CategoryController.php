@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Session;
 
 class CategoryController extends Controller
 {
@@ -33,6 +34,8 @@ class CategoryController extends Controller
     {
         //
 
+        $userId =$request->session()->get('user_id'); // Retrieve user ID from session
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|unique:categories',
         ]);
@@ -44,6 +47,7 @@ class CategoryController extends Controller
       
         
         $task = new Category($request->all());
+        $task->user_id=$userId;
         $task->save();
 
 
@@ -83,7 +87,9 @@ class CategoryController extends Controller
 
         $task = Category::find($id);
 
-        if ($task->user_id !== auth()->id()) {
+        $userId =$request->session()->get('user_id'); // Retrieve user ID from session
+
+        if ($task->user_id !== $userId) {
 
             return response()->json(['error' => 'Unauthorized'], 403);
     }
@@ -113,12 +119,13 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id,Request $request)
     {
         //
         $task = Category::find($id);
+        $userId =$request->session()->get('user_id'); // Retrieve user ID from session
 
-        if ($task->user_id !== auth()->id()) {
+        if ($task->user_id !== $userId) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
     

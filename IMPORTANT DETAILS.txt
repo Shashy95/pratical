@@ -1,0 +1,12 @@
+STEPS ON INSTALLING
+create database called pratical
+migrate table
+
+for the to do list 2
+login use api route (/api/login)
+parameter for tasks include : title,description,categories(not required).Tasks can have more than one category which can be separated by comma(id).
+
+for the to do list 4
+parameter for places include : name,longitude,latitude,category_id.
+table for category connected with places is called places_category.
+

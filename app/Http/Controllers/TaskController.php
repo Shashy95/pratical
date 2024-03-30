@@ -18,10 +18,9 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        //
+        //$userId = $request->user_id;
 
-        $userId =Session::get(user);;
-        dd($userId);
+
 
         $tasks = Task::all();
         return response()->json($tasks);
@@ -36,8 +35,19 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         //
+        dd($request->user_id);
+      
+        if(!empty($request->user_id)){
+
+        }
+
+        else{
+            $userId =$request->session()->get('user_id'); // Retrieve user ID from session   
+        }
+
        
-       
+
+        if(!empty( $userId)){
 
         $validator = Validator::make($request->all(), [
             'title' => 'required|unique:tasks',
@@ -51,6 +61,7 @@ class TaskController extends Controller
       
         
         $task = new Task($request->all());
+        $task->user_id=$userId;
         $task->save();
 
       
@@ -63,6 +74,14 @@ class TaskController extends Controller
 
     }
         return response()->json($task, 201);
+
+}
+
+else {
+    return response()->json(['error' => 'Unauthorized'], 403);
+}
+
+
     }
 
     /**
@@ -98,7 +117,9 @@ class TaskController extends Controller
 
         $task = Task::find($id);
 
-        if ($task->user_id !== auth()->id()) {
+        $userId =$request->session()->get('user_id'); // Retrieve user ID from session
+
+        if ($task->user_id !== $userId) {
 
             return response()->json(['error' => 'Unauthorized'], 403);
     }
@@ -129,12 +150,14 @@ class TaskController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id,Request $request)
     {
         //
         $task = Task::find($id);
+        
+        $userId =$request->session()->get('user_id'); // Retrieve user ID from session
 
-        if ($task->user_id !== auth()->id()) {
+        if ($task->user_id !== $userId) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
     
@@ -149,12 +172,23 @@ class TaskController extends Controller
 
     }
 
-    public function complete($id)
+    public function complete($id,Request $request)
     {
         //
         $task = Task::find($id);
 
-        if ($task->user_id !== auth()->id()) {
+       
+      
+        if(!empty($request->user_id)){
+            $userId =$request->user_id;
+        }
+
+        else{
+            $userId =$request->session()->get('user_id'); // Retrieve user ID from session   
+        }
+
+
+        if ($task->user_id !== $userId) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
     
@@ -162,7 +196,7 @@ class TaskController extends Controller
       if (!$task) {
             return response()->json(['message' => 'Task not found'], 404);
         }
-        $task->update(['complete'=>'1']);
+        $task->update(['completed'=>'1']);
         return response()->json(['message' => 'Task completed successfully']);
 
     }

@@ -42,9 +42,17 @@ class Auth_ApiController extends Controller
         
         if($user && Hash::check($request->password,$user->password))
         {
-            $response=['success'=>true,'error'=>false,'message'=>'User login successfully','user'=>$user];
+            $request->session()->put('user_id', $user->id); // Store user ID in session
+            $response=['success'=>true,'error'=>false,'message'=>'User login successfully','user'=>$user, 'token' => $user->createToken('MyApp')->plainTextToken];
 
             return response()->json($response,200);
+            /*
+            return response()->json([
+                'user_id' => $user->id,
+                'token' => $user->createToken('MyApp')->plainTextToken
+            ]);
+
+            */
         }else{
             $response=['success'=>false,'error'=>true,'message'=>'incorrect email or password'];
             return response()->json($response,200);
