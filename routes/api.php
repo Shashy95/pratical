@@ -14,9 +14,10 @@ use App\Http\Controllers\PlaceController;
 |
 */
 
-Route::middleware('api.auth')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::middleware('auth:sanctum')
+    ->get('/api/user', function (Request $request) {
+        return $request->user();
+    });
 
 Route::post('login','App\Http\Controllers\Auth\Auth_ApiController@login');
 Route::post('register','App\Http\Controllers\Auth\Auth_ApiController@register');

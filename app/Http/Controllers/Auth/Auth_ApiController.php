@@ -43,7 +43,7 @@ class Auth_ApiController extends Controller
         if($user && Hash::check($request->password,$user->password))
         {
             $request->session()->put('user_id', $user->id); // Store user ID in session
-            $response=['success'=>true,'error'=>false,'message'=>'User login successfully','user'=>$user, 'token' => $user->createToken('MyApp')->plainTextToken];
+            $response=['success'=>true,'error'=>false,'message'=>'User login successfully','user'=>$user, 'token' => $user->createToken('token-name')->plainTextToken];
 
             return response()->json($response,200);
             /*
